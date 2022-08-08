@@ -2,12 +2,32 @@ package org.project.service;
 
 import org.project.modal.Seat;
 import org.project.modal.type.SeatType;
+import org.project.util.AirplaneSeatingUtil;
 
 import java.util.LinkedList;
 
 public class AirplaneSeatingService {
 
+    private static final int COL_INDEX = 0;
+    private static final int ROW_INDEX = 1;
+
+    /**
+     * int[][] cabin = {{2,1},{1,2}}
+     * transforms into
+     * SEATS[][] = 3*2 matrix
+     * ----------------------------------------------------------------------
+     * |     (0,0)      | |     (0,1)      |           |     (0,2)       |  |
+     *                                                 |     (1,2)          |
+     * ----------------------------------------------------------------------
+     * @param cabin
+     * @param totalPassengers
+     * @return SEATS[][]
+     */
     public Seat[][] bookingPassengerSeat(int[][] cabin, int totalPassengers){
+        if(!AirplaneSeatingUtil.validCabin(cabin)){
+            return new Seat[0][0];
+        }
+
         LinkedList<Seat> aisleSeatQueue = new LinkedList<>();
         LinkedList<Seat> windowSeatQueue = new LinkedList<>();
         LinkedList<Seat> middleSeatQueue = new LinkedList<>();
@@ -17,35 +37,6 @@ public class AirplaneSeatingService {
         return assignSeat(seats,totalPassengers,aisleSeatQueue,windowSeatQueue,middleSeatQueue);
     }
 
-    private Seat[][] assignSeat(Seat[][] seats,
-                            int totalPassengers,
-                            LinkedList<Seat> aisleSeatQueue,
-                            LinkedList<Seat> windowSeatQueue,
-                            LinkedList<Seat> middleSeatQueue) {
-        int passengerCounter = 0;
-        while(!aisleSeatQueue.isEmpty()){
-            if(passengerCounter >= totalPassengers){
-                return seats;
-            }
-            aisleSeatQueue.poll().setPassengerNumber(++passengerCounter);
-        }
-
-        while(!windowSeatQueue.isEmpty()){
-            if(passengerCounter >= totalPassengers){
-                return seats;
-            }
-            windowSeatQueue.poll().setPassengerNumber(++passengerCounter);
-        }
-
-        while(!middleSeatQueue.isEmpty()){
-            if(passengerCounter >= totalPassengers){
-                return seats;
-            }
-            middleSeatQueue.poll().setPassengerNumber(++passengerCounter);
-        }
-        return seats;
-    }
-
     private Seat[][] getSeats(int[][] cabins,
                               LinkedList<Seat> aisleSeatQueue,
                               LinkedList<Seat> windowSeatQueue,
@@ -53,11 +44,11 @@ public class AirplaneSeatingService {
 
         Seat[][] seats = initSeats(cabins);
         int seatNumber = 0;
-        for(int row = 0;row < seats[0].length;row++){
+        for(int row = 0;row < seats[COL_INDEX].length;row++){
             int seatCounter = 0;
             for(int cabin = 0; cabin < cabins.length;cabin++){
                 int seat = seatCounter;
-                seatCounter += cabins[cabin][0];
+                seatCounter += cabins[cabin][COL_INDEX];
                 if(cabins[cabin][1] <= row){
                     continue;
                 }
@@ -82,12 +73,46 @@ public class AirplaneSeatingService {
         return seats;
     }
 
+    private Seat[][] assignSeat(Seat[][] seats,
+                                int totalPassengers,
+                                LinkedList<Seat> aisleSeatQueue,
+                                LinkedList<Seat> windowSeatQueue,
+                                LinkedList<Seat> middleSeatQueue) {
+        int passengerCounter = 0;
+        while(!aisleSeatQueue.isEmpty()){
+            if(passengerCounter >= totalPassengers){
+                return seats;
+            }
+            aisleSeatQueue.poll().setPassengerNumber(++passengerCounter);
+        }
+
+        while(!windowSeatQueue.isEmpty()){
+            if(passengerCounter >= totalPassengers){
+                return seats;
+            }
+            windowSeatQueue.poll().setPassengerNumber(++passengerCounter);
+        }
+
+        while(!middleSeatQueue.isEmpty()){
+            if(passengerCounter >= totalPassengers){
+                return seats;
+            }
+            middleSeatQueue.poll().setPassengerNumber(++passengerCounter);
+        }
+        return seats;
+    }
+
+    /**
+     * Init Seats matrix : total column in cabin * max(row in cabin)
+     * @param cabins
+     * @return
+     */
     private Seat[][] initSeats(int[][] cabins){
         int row = 0,col = 0;
         for(int i=0;i< cabins.length;i++){
-            col += cabins[i][0];
-            if(cabins[i][1] > row){
-                row = cabins[i][1];
+            col += cabins[i][COL_INDEX];
+            if(cabins[i][ROW_INDEX] > row){
+                row = cabins[i][ROW_INDEX];
             }
         }
 

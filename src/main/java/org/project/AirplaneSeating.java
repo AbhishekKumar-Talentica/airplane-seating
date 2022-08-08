@@ -1,18 +1,33 @@
 package org.project;
 
 import org.project.service.AirplaneSeatingService;
-import org.project.util.SeatingUtil;
+import org.project.util.AirplaneSeatingUtil;
+
+import java.util.Scanner;
 
 public class AirplaneSeating {
     public static void main(String[] args) {
-
-        int[][] seat = {{3,2}, {4,3}, {2,3}, {3,4}};
-        int passenger = 30;
-
-        int[][] seat1 = {{1,2},{3,4}};
-        int passenger1 = 12;
-
+        Scanner scanner = new Scanner(System.in);
         AirplaneSeatingService airplaneSeatingService = new AirplaneSeatingService();
-        SeatingUtil.printSeating(airplaneSeatingService.bookingPassengerSeat(seat1,passenger1),seat1);
+        boolean booking = true;
+
+        do{
+            int numberOfCabins = scanner.nextInt();
+            int[][] cabins = new int[numberOfCabins][2];
+            for(int cabin = 0 ;cabin < numberOfCabins;cabin++){
+                cabins[cabin][0] = scanner.nextInt();
+                cabins[cabin][1] = scanner.nextInt();
+            }
+            int passengers = scanner.nextInt();
+
+            AirplaneSeatingUtil.printSeating(
+                    airplaneSeatingService.bookingPassengerSeat(cabins,passengers),cabins);
+
+            System.out.println("Test another (y/n)");
+            char cont = scanner.next().charAt(0);
+            if(cont != 'y' || cont != 'Y'){
+                booking = false;
+            }
+        }while(booking);
     }
 }
