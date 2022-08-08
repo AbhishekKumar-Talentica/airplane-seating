@@ -4,9 +4,9 @@ import org.project.modal.Seat;
 import org.project.modal.type.SeatType;
 
 public class SeatingUtil {
-    private static String filledSeat = "[ S: %04d {%s} PA: %04d ]";
+    private static String filledSeat = "[ {%7s } PA: %4s ]";
 
-    private static String emptySeat = "                        ";
+    private static String emptySeat = "                       ";
 
     private static String cabinSpace = "     ";
 
@@ -26,15 +26,6 @@ public class SeatingUtil {
             }
         }
         printSeating(seat,cabin);
-    }
-
-    private static char getSeatTypeChar(SeatType type){
-        switch (type){
-            case AISLE: return 'A';
-            case MIDDLE:return 'M';
-            case WINDOW:return 'W';
-            default:return 'X';
-        }
     }
 
     public static void printSeating(Seat[][] seat,int[][] cabin){
@@ -57,9 +48,8 @@ public class SeatingUtil {
                 }else{
                     System.out.print(
                             String.format(filledSeat,
-                                    seat[col][row].getSeatNumber(),
-                                    getSeatTypeChar(seat[col][row].getSeatType()),
-                                    seat[col][row].getPassengerNumber()));
+                                    seat[col][row].getSeatType(),
+                                    seat[col][row].getPassengerNumber() == 0 ? "----" : seat[col][row].getPassengerNumber()));
                 }
             }
             System.out.println();
@@ -69,9 +59,8 @@ public class SeatingUtil {
     private static void printInfoDetails(){
         System.out.println("___________________________________________________________________________");
         System.out.println("|  [] : Represent one seat                                                |");
-        System.out.println("|  S:  Represent Seat number                                              |");
         System.out.println("|  {} : Represent Seat type A - Aisle, W - window, M - Middle             |");
-        System.out.println("|  PA: Represent passenger number                                         |");
+        System.out.println("|  PA : Represent passenger number                                         |");
         System.out.println("___________________________________________________________________________");
     }
 }
